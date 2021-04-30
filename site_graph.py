@@ -7,6 +7,7 @@ import argparse
 import pickle
 import scipy
 import numpy as np
+import pandas as pd
 
 from collections import deque
 
@@ -29,6 +30,7 @@ def crawl(url, visit_external):
     resouce_pages = set()
     error_codes = dict()
     canonical_urls = dict() 
+    edges_df = pd.DataFrame(columns=["Source", "Target"])
 
     head = requests.head(url, timeout=10)
     site_url = head.url
@@ -96,6 +98,9 @@ def crawl(url, visit_external):
                 if error or not head:
                     handle_error(error, error_obj, head, link_url, visited, error_codes)
                     edges.add((url, link_url))
+                    df_row = pd.Series([url, link_url], index=edges_df.columns)
+                    edges_df = edges_df.append(df_row, ignore_index=True)
+
                     continue
 
                 canonical_urls[link_url] = head.url
@@ -107,10 +112,12 @@ def crawl(url, visit_external):
                         to_visit.append((head.url, url))
                     else:
                         resouce_pages.add(link_url)
-            
+
+            df_row = pd.Series([url, link_url], index=edges_df.columns)
+            edges_df = edges_df.append(df_row, ignore_index=True)
             edges.add((url, link_url))
 
-    return edges, error_codes, resouce_pages
+    return edges, error_codes, resouce_pages, edges_df
 
 
 def get_node_info(nodes, error_codes, resource_pages, args):
@@ -207,8 +214,10 @@ if __name__ == '__main__':
             if not args.force:
                 exit(1)
 
-        edges, error_codes, resource_pages = crawl(args.site_url, args.visit_external)
+        edges, error_codes, resource_pages, edges_df = crawl(args.site_url, args.visit_external)
         print('Crawl complete.')
+
+        edges_df.to_csv("edges.csv", index=False)
 
         with open(args.data_file, 'wb') as f:
             pickle.dump((edges, error_codes, resource_pages, args.site_url), f)
