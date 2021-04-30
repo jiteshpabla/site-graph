@@ -26,7 +26,7 @@ To see more options, run:
 ## Output
 
 - site.html - A visualization of the website structure. It may end up being too big if the website is large and may crash your browser.
-- edges.csv - All of the pairs of linked webpages.
+- edges.csv - All of the pairs of linked webpages. (May contain duplicates, see the "Cleaning CSV" section below").
 - crawl.pickle - All of the pairs of linked webpages in a Python specific format "pickle".
 
 ## Cleaning CSV
