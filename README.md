@@ -29,6 +29,11 @@ To see more options, run:
 - edges.csv - All of the pairs of linked webpages.
 - crawl.pickle - All of the pairs of linked webpages in a Python specific format "pickle".
 
+## Cleaning CSV
+
+Run the clean_edges.py script to cleanup the generated CSV file.
+NOTE: options in the script are drupal 7 website specific.
+
 #### Example of site.html output
 
 ![](example.png)
